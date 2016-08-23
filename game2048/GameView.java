@@ -4,6 +4,8 @@ package com.dengmingli.game2048;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.security.auth.PrivateCredentialPermission;
+
 import android.R.integer;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -18,8 +20,6 @@ public class GameView extends GridLayout{
 
 	private Card[][] cardsmap =new Card[4][4];
 	private List<Point> enpoints =new ArrayList<Point>();
-
-
 	public GameView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initGameView();
@@ -41,9 +41,7 @@ public class GameView extends GridLayout{
 		 * 通过设置监听器的方式，对触屏移动方向进行判断
 		 */
 		setOnTouchListener(new OnTouchListener() {
-
 			private float startX,startY,offsetX,offsetY;
-
 			@Override
 			public boolean onTouch(View view, MotionEvent event) {
 				/*
@@ -57,37 +55,26 @@ public class GameView extends GridLayout{
 				case MotionEvent.ACTION_UP:
 					offsetX = event.getX()-startX;
 					offsetY= event.getY()-startY;
-
 					if (Math.abs(offsetX)>Math.abs(offsetY)) {
-
 						if (offsetX<-5) {
-
 							swipeLeft();
-							System.out.println("left");
 						}else if (offsetX > 5) {
 
 							swipeRight();
-							System.out.println("right");
 						}}
 					else {
 						if (offsetY<-5) {
 							swipeUp();
-							System.out.println("up");
 						}else if(offsetY>5){
 							swipeDown();
-							System.out.println("down");
 						}
 					}
-
 					break;
-
 				}
-
 				return true;
 			}
 		});
 	}
-
 
 	//调整宽高
 	@Override
@@ -99,6 +86,7 @@ public class GameView extends GridLayout{
 		addCard(cardWidth,cardWidth);
 		startGame();
 	}
+
 	private void addCard(int CardWidth,int CardHeight) {
 		Card card;
 		for (int y = 0; y < 4; y++) {
@@ -108,9 +96,6 @@ public class GameView extends GridLayout{
 				addView(card,CardWidth,CardHeight);
 				cardsmap[x][y] =card;
 			}
-
-
-
 		}
 	}
 
@@ -121,40 +106,26 @@ public class GameView extends GridLayout{
 				cardsmap[x][y].setNum(0);
 			}
 		}
-
-
 		addRundomNum();
 		addRundomNum();
-
-
-
+		updateColor(cardsmap);
+		getcolor(cardsmap);
 	}
-
-
-
-
 
 	private void addRundomNum(){
 		enpoints.clear();
-
 		for (int y = 0; y < 4; y++) {
 			for (int x = 0; x < 4; x++) {
 				if (cardsmap[x][y].getNum()<=0) {
 					enpoints.add(new Point(x, y));
 				}
-
 			}
-
 		}
 		Point p=enpoints.remove((int)(Math.random()*enpoints.size()));
 		cardsmap[p.x][p.y].setNum(Math.random()>0.1?2:4);
-
 	}
 
-
-
 	private void swipeRight(){
-
 		boolean merge=false;
 		for (int y = 0; y <4; y++) {
 			for (int x = 3; x >=0; x--) {
@@ -165,13 +136,12 @@ public class GameView extends GridLayout{
 							cardsmap[x1][y].setNum(0);
 							x++;
 							merge=true;
-						}else if (cardsmap[x][y].equals(cardsmap[x1][y].getNum())) {
+						}else if (cardsmap[x][y].equals(cardsmap[x1][y])) {
 							cardsmap[x][y].setNum(cardsmap[x][y].getNum()*2);
 							cardsmap[x1][y].setNum(0);
 							MainActivity.getMainActivity().addScore(cardsmap[x][y].getNum());
 							merge=true;
 						}
-
 						break;
 					}
 				}
@@ -179,23 +149,22 @@ public class GameView extends GridLayout{
 		}
 		if (merge) {
 			addRundomNum();
+			updateColor(cardsmap);
+			getcolor(cardsmap);
 			isfinish();
-
 		}
-
 	}
+
 	private void swipeLeft(){
 		boolean merge=false;
 		for (int y = 0; y <4; y++) {
 			for (int x = 0; x < 4; x++) {
-
 				for (int x1 = x+1; x1 < 4; x1++) {
 					if (cardsmap[x1][y].getNum()>0) {
 						if (cardsmap[x][y].getNum()<=0) {
 							cardsmap[x][y].setNum(cardsmap[x1][y].getNum());
 							cardsmap[x1][y].setNum(0);
 							x--;
-
 							merge=true;
 						}else if (cardsmap[x][y].equals(cardsmap[x1][y])) {
 							cardsmap[x][y].setNum(cardsmap[x][y].getNum()*2);
@@ -203,7 +172,6 @@ public class GameView extends GridLayout{
 							MainActivity.getMainActivity().addScore(cardsmap[x][y].getNum());
 							merge=true;
 						}
-
 						break;
 					}
 				}
@@ -211,10 +179,12 @@ public class GameView extends GridLayout{
 		}
 		if (merge) {
 			addRundomNum();
+			updateColor(cardsmap);
+			getcolor(cardsmap);
 			isfinish();
-
 		}
 	}
+
 	private void swipeDown(){
 		boolean merge=false;
 		for (int x = 0; x <4; x++) {
@@ -230,27 +200,26 @@ public class GameView extends GridLayout{
 						}else if (cardsmap[x][y].equals(cardsmap[x][y1])) {
 							cardsmap[x][y].setNum(cardsmap[x][y].getNum()*2);
 							cardsmap[x][y1].setNum(0);
+							
 							MainActivity.getMainActivity().addScore(cardsmap[x][y].getNum());
 							merge=true;
 						}
-
 						break;
 					}
 				}
 			}
 		}if (merge) {
 			addRundomNum();
+			updateColor(cardsmap);
+			getcolor(cardsmap);
 			isfinish();
-
 		}
-
 	}
 
 	private void swipeUp(){
 		boolean merge=false;
 		for (int x = 0; x <4; x++) {
 			for (int y = 0; y < 4; y++) {
-
 				for (int y1 = y+1; y1 < 4; y1++) {
 					if (cardsmap[x][y1].getNum()>0) {
 						if (cardsmap[x][y].getNum()<=0) {
@@ -264,19 +233,43 @@ public class GameView extends GridLayout{
 							MainActivity.getMainActivity().addScore(cardsmap[x][y].getNum());
 							merge=true;
 						}
-
 						break;
 					}
 				}
 			}
 		}if (merge) {
 			addRundomNum();
+			updateColor(cardsmap);
+			getcolor(cardsmap);
 			isfinish();
-
 		}
 	}
 
+	private void updateColor(Card[][] cards) {
+		for (int y = 0; y < 4; y++) {
+			for (int x = 0; x < 4; x++) {
+				cards[x][y].changgecolor(cards[x][y].getNum());
+			}
+		}
 
+	}
+	
+	private void getcolor(Card[][] cards){
+		int max=2;
+		for (int y = 0; y < 4; y++) {
+			for (int x = 0; x < 4; x++) {
+				Card card=cards[x][y];
+				if (max<card.getNum()) {
+					max=card.getNum();
+				}
+			}
+		}
+		MainActivity.getMainActivity().setColor(max);
+		MainActivity.getMainActivity().showcolor();
+	}
+
+	
+	
 	private void isfinish() {
 		boolean gameOver =true;
 		ALL:
@@ -293,30 +286,15 @@ public class GameView extends GridLayout{
 				}
 			}
 		if (gameOver) {
-
 			new AlertDialog.Builder(getContext()).setTitle("你好").setMessage("游戏结束").setPositiveButton("重来",new DialogInterface.OnClickListener() {
-				
 				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
 					startGame();
-					
 				}
 			}).show(); 
+		}
 	}
-
-
-
-
-
-
-
-
-	}
-
 }
-
-
-
 
 
 
