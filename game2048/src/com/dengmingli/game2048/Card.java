@@ -13,9 +13,6 @@ public class Card extends FrameLayout{
 
 	private TextView label;
 
-
-
-
 	public Card(Context context) {
 		super(context);
 
